@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng 20/10 - Dành tặng những người phụ nữ tuyệt vời!</title>
+    <style>
+        /* Import Google Fonts (Giữ nguyên) */
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:wght@700&display=swap');
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #fce4ec 0%, #ffe0f0 30%, #e0f2f7 70%, #bbdefb 100%);
+            font-family: 'Times New Roman', serif;
+            color: #4a4a4a;
+            text-align: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* --- THAY ĐỔI 1: Màn hình chờ (Splash Screen) --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.7); /* Nền mờ che nội dung */
+            backdrop-filter: blur(10px); /* Hiệu ứng kính mờ */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+            cursor: pointer;
+            transition: opacity 0.7s ease, visibility 0.7s ease; /* Hiệu ứng mờ dần khi ẩn */
+        }
+        
+        #splash-screen h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5em;
+            color: #d81b60;
+        }
+
+        #splash-screen p {
+            font-size: 1.3em;
+            color: #616161;
+        }
+
+        #play-button {
+            background-color: #d81b60;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-family: 'Times New Roman', serif;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+
+        #play-button:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- THAY ĐỔI 2: Ẩn lời chúc ban đầu --- */
+        .message {
+            z-index: 10;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            max-width: 70%;
+            
+            /* Sửa: Ẩn ban đầu, chỉ hiện khi click */
+            opacity: 0; 
+            transform: translateY(50px);
+            visibility: hidden; 
+        }
+
+        /* Lớp .show sẽ được thêm bằng JavaScript để kích hoạt animation */
+        .message.show {
+            visibility: visible;
+            animation: fadeIn 2s ease-out forwards;
+        }
+        
+        /* Các style khác giữ nguyên */
+        h1 {
+            color: #d81b60;
+            font-size: 3.8em;
+            margin-bottom: 25px;
+            font-family: 'Playfair Display', serif;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.05);
+        }
+        p {
+            font-size: 1.6em;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            color: #616161;
+        }
+        .signature {
+            font-style: italic;
+            font-size: 1.3em;
+            color: #757575;
+            margin-top: 30px;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* CSS cho Bông Hoa (Giữ nguyên) */
+        .flower {
+            position: absolute;
+            width: var(--flower-size);
+            height: var(--flower-size);
+            top: -50px;
+            pointer-events: none;
+            opacity: 0;
+            transform-origin: center center;
+            animation: fall var(--animation-duration) linear infinite;
+        }
+        .flower-petal {
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            background-color: var(--petal-color);
+            border-radius: 50% 50% 0 50%;
+            transform-origin: 0 100%;
+        }
+        .flower-petal:nth-child(1) { transform: rotate(0deg) translate(0%, -50%); }
+        .flower-petal:nth-child(2) { transform: rotate(72deg) translate(0%, -50%); }
+        .flower-petal:nth-child(3) { transform: rotate(144deg) translate(0%, -50%); }
+        .flower-petal:nth-child(4) { transform: rotate(216deg) translate(0%, -50%); }
+        .flower-petal:nth-child(5) { transform: rotate(288deg) translate(0%, -50%); }
+        .flower-center {
+            position: absolute;
+            width: 30%;
+            height: 30%;
+            background-color: var(--center-color);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        /* Keyframes (Giữ nguyên) */
+        @keyframes fall {
+            0% {
+                transform: translate(var(--initial-x), -10vh) scale(0.5) rotate(0deg);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.9;
+                transform: translate(var(--initial-x), 0vh) scale(var(--flower-scale)) rotate(var(--initial-rotation));
+            }
+            85% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate(var(--final-x), 110vh) scale(var(--flower-scale)) rotate(calc(var(--initial-rotation) + 720deg));
+                opacity: 0;
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <h2>Một món quà nhỏ 🎁</h2>
+        <p>Gửi tặng những người phụ nữ tuyệt vời!</p>
+        <button id="play-button">Nhấn vào đây để mở ❤️</button>
+    </div>
+
+    <audio id="bg-music" loop>
+        <source src="your-chill-music.mp3" type="audio/mpeg">
+        Trình duyệt của bạn không hỗ trợ audio.
+    </audio>
+
+    <div class="message">
+        <h1>Chúc Mừng Ngày Phụ Nữ Việt Nam 20/10!</h1>
+        <p>Kính chúc Cô, Gì, Bác, Chị, cùng tất cả những người phụ nữ yêu thương của chúng ta một ngày thật nhiều niềm vui, hạnh phúc, và luôn xinh đẹp, rạng rỡ.</p>
+        <p>Nhân ngày Phụ nữ Việt Nam 20/10, con xin gửi lời chúc mừng trân trọng và yêu thương nhất đến Mẹ, các Bác, các Cô, các Dì và các Chị. Kính chúc mọi người luôn mạnh khỏe, trẻ trung, xinh đẹp, rạng rỡ và ngập tràn hạnh phúc. Cảm ơn những người phụ nữ tuyệt vời của gia đình ta vì đã luôn là nguồn yêu thương vô bờ, là điểm tựa vững chắc, là người hy sinh thầm lặng và là nguồn cảm hứng bất tận cho chúng con/cháu/em. Mong rằng hôm nay và tất cả mọi ngày, mọi người sẽ luôn nhận được thật nhiều niềm vui, sự quan tâm và những điều tốt đẹp nhất xứng đáng với những gì mọi người đã trao đi.</p>
+        <div class="signature">Trân trọng,<br>Lại Trung Hiếu</div>
+    </div>
+
+    <script>
+        // Định nghĩa hàm createFlower (Giữ nguyên)
+        const flowerColors = [
+            { petal: '#ff8a80', center: '#ffeb3b' }, { petal: '#e040fb', center: '#e1bee7' },
+            { petal: '#8c9eff', center: '#bbdefb' }, { petal: '#ffccbc', center: '#ffecb3' },
+            { petal: '#a7ffeb', center: '#c8e6c9' }, { petal: '#f48fb1', center: '#f8bbd0' }
+        ];
+
+        function createFlower() {
+            const flower = document.createElement('div');
+            flower.classList.add('flower');
+            const randomColor = flowerColors[Math.floor(Math.random() * flowerColors.length)];
+            flower.style.setProperty('--petal-color', randomColor.petal);
+            flower.style.setProperty('--center-color', randomColor.center);
+            for (let i = 0; i < 5; i++) {
+                const petal = document.createElement('div');
+                petal.classList.add('flower-petal');
+                flower.appendChild(petal);
+            }
+            const center = document.createElement('div');
+            center.classList.add('flower-center');
+            flower.appendChild(center);
+            const size = Math.random() * 20 + 20;
+            const duration = Math.random() * 7 + 8;
+            const initialX = Math.random() * 100;
+            const finalX = initialX + (Math.random() - 0.5) * 40;
+            const initialRotation = Math.random() * 360;
+            const scale = Math.random() * 0.5 + 0.7;
+            flower.style.setProperty('--flower-size', size + 'px');
+            flower.style.setProperty('--animation-duration', duration + 's');
+            flower.style.setProperty('--initial-x', initialX + 'vw');
+            flower.style.setProperty('--final-x', finalX + 'vw');
+            flower.style.setProperty('--initial-rotation', initialRotation + 'deg');
+            flower.style.setProperty('--flower-scale', scale);
+            document.body.appendChild(flower);
+            flower.addEventListener('animationend', () => {
+                flower.remove();
+            });
+        }
+
+        // --- THAY ĐỔI 5: Thêm JavaScript để xử lý sự kiện click ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const splashScreen = document.getElementById('splash-screen');
+            const playButton = document.getElementById('play-button');
+            const audio = document.getElementById('bg-music');
+            const message = document.querySelector('.message');
+
+            playButton.addEventListener('click', () => {
+                // 1. Phát nhạc
+                audio.play().catch(e => console.log("Trình duyệt đã chặn tự động phát nhạc."));
+                
+                // 2. Ẩn màn hình chờ với hiệu ứng mờ dần
+                splashScreen.style.opacity = '0';
+                splashScreen.style.visibility = 'hidden';
+
+                // 3. Hiện lời chúc (kích hoạt animation)
+                message.classList.add('show');
+                
+                // 4. Bắt đầu tạo hoa rơi
+                setInterval(createFlower, 200);
+            });
+        });
+    </script>
+</body>
+</html>
